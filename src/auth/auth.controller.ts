@@ -12,20 +12,19 @@ export class AuthController {
 
     @Post()
     async login(@Body("email") email:string,
-        @Body("password") plaintextPassword:string) {
-
-            const user = await this.userModel.findOne({email}) 
-            
+          @Body("password") plaintextPassword:string) {
+            const user = await this.userModel.findOne({email})
             if(!user){
                 console.log("user doesnt exist on the database", user.email);
                 throw new UnauthorizedException();
             }
             return new Promise((resolve, reject) => {
+                console.log("plain: ", plaintextPassword, "hash: ", user.password);
                 const verif = bcrypt.compareSync(plaintextPassword, user.password);
                 if(verif == false){
                             reject(new UnauthorizedException());
                         }
-                        const authJwtToken = jwt.sign({email, cond: user.condition}, JWT_SECRET);
+                        const authJwtToken = jwt.sign({id: user._id, name: user.name, email, cond: user.condition}, JWT_SECRET);
                         resolve({authJwtToken});
                     }        
                 );    

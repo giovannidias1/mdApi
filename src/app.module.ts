@@ -11,6 +11,7 @@ import { GetUserMiddleware } from './middleware/get-user.middleware';
   imports: [
     TypegooseModule.forRoot('mongodb://localhost:27017/moutaindb', {
       useNewUrlParser: true,
+      useCreateIndex: true
 
     }),
     UsersModule,
@@ -24,15 +25,13 @@ import { GetUserMiddleware } from './middleware/get-user.middleware';
     AppService
   ],
 })
-export class AppModule implements NestModule { 
-  
+export class AppModule implements NestModule {
+
   configure(consumer: MiddlewareConsumer): void {
 
     consumer
-        .apply(GetUserMiddleware)
-        .forRoutes(
-          AuthModule,
-        );
+      .apply(GetUserMiddleware)
+      .forRoutes("login", "posts", "users");
 
-}
+  }
 }

@@ -7,11 +7,10 @@ import {JWT_SECRET} from '../constants';
 export class GetUserMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next: () => void){
-        console.log("aaaaaaaaaaaaaaaaa");
         const authJwtToken = req.headers.authorization;
 
         if(!authJwtToken) {
-            console.log("entrei aqui");
+            console.log(authJwtToken);
             next();
             return;
         }
@@ -27,7 +26,6 @@ export class GetUserMiddleware implements NestMiddleware {
         catch(err) {
             console.log("Error handling authentication JWT: ", err);
         }
-        console.log("conteudo do token");
         next();
     }
 

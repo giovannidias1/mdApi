@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Param, Header, Inject, Request, Req, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.model';
 import * as bcrypt from 'bcrypt';
+import {AuthenticationGuard} from '../guards/authentication.guard';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService){ }
 
     @Get()
     async getUsers(): Promise<User[] | null> {
@@ -22,5 +23,32 @@ export class UsersController {
         console.log(senhatexto, "=", user.password);
       }
       return await this.usersService.create(user);
+    }
+
+    @Post("follow/:userId")
+    @UseGuards(AuthenticationGuard)
+    async followSomebody(@Param("userId") userId:string,
+    @Req() request: Request): Promise<Boolean>{
+      const logedUserData = request["user"];
+      return this.usersService.follow(userId, logedUserData);
+    }
+
+    @Post("unfollow/:userId")
+    @UseGuards(AuthenticationGuard)
+    async unfollowSomebody(@Param("userId") userId:string,
+    @Req() request: Request): Promise<Boolean>{
+      const logedUserData = request["user"];
+      return this.usersService.unfollow(userId, logedUserData);
+    }
+
+    @Post('updateuser')
+    @UseGuards(AuthenticationGuard)
+    async updateUser(@Body() changes: User,
+    @Req() request: Request){
+        const logedUserData = request["user"];
+        if(changes.password){
+        changes.password = bcrypt.hashSync(changes.password, 10);
+        }
+        return this.usersService.updateUser(changes, logedUserData);
     }
 }
