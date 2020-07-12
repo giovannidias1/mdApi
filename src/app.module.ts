@@ -6,6 +6,7 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
 import { GetUserMiddleware } from './middleware/get-user.middleware';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
