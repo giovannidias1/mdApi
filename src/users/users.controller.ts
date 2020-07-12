@@ -55,27 +55,27 @@ export class UsersController {
     return this.usersService.updateUser(changes, logedUserData);
   }
 
- // @Post('images')
- // @UseInterceptors(
-   // FileInterceptor('image', {
-     // storage: diskStorage({
-       // destination: './files',
-       // filename: editFileName,
-    //  }),
-    //  fileFilter: imageFileFilter,
-   // }),
-  //)
-  //async uploadedFile(@UploadedFile() file) {
-    //const response = {
-     // originalname: file.originalname,
-     // filename: file.filename,
-   // };
-  //  return response;
- // }
+  @Post('images')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './files',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadedFile(@UploadedFile() file) {
+    const response = {
+      originalname: file.originalname,
+      filename: file.filename,
+    };
+    return response;
+  }
 
- // @Get('images/:imgpath')
- // seeUploadedFile(@Param('imgpath') image, @Res() res) {
-    //return res.sendFile(image, { root: './files' });
- // }
+  @Get('images/:imgpath')
+  seeUploadedFile(@Param('imgpath') image, @Res() res) {
+    return res.sendFile(image, { root: './files' });
+  }
 
 }
