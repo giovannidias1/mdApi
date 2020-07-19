@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Param, Header, Inject, Request, Req, Put, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Param, Header, Inject, Request, Req, Put, UseInterceptors, UploadedFile, Res, Query, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.model';
 import * as bcrypt from 'bcrypt';
@@ -55,7 +55,8 @@ export class UsersController {
     return this.usersService.updateUser(changes, logedUserData);
   }
 
-  @Post('images')
+  @Post('profilepic')
+  @UseGuards(AuthenticationGuard)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -65,17 +66,41 @@ export class UsersController {
       fileFilter: imageFileFilter,
     }),
   )
-  async uploadedFile(@UploadedFile() file) {
+  async uploadedFile(@UploadedFile() file,
+    @Req() request: Request) {
+    const logedUserData = request["user"];
     const response = {
       originalname: file.originalname,
       filename: file.filename,
     };
+    this.usersService.updateRefProfilePic(file.filename, logedUserData);
     return response;
   }
 
-  @Get('images/:imgpath')
-  seeUploadedFile(@Param('imgpath') image, @Res() res) {
-    return res.sendFile(image, { root: './files' });
+  @Get('profilepic')
+  @UseGuards(AuthenticationGuard)
+  async userUploadedPic(@Res() res, @Req() request: Request) {
+    const logedUserData = request["user"];
+    return res.sendFile(await this.usersService.catchProfilePicPath(logedUserData), { root: './files' });
   }
+
+  @Get('searchusers')
+  searchLesson(
+    @Query("searchName") searchName: string,
+    @Query("sortOrder") sortOrder = "asc",
+    @Query("pageNumber") pageNumber = 0,
+    @Query("pageSize") pageSize = 3) {
+
+    if (!searchName) {
+      throw new BadRequestException("Defina um nome para ser pesquisado");
+    }
+
+    if (sortOrder != "asc" && sortOrder != 'desc') {
+      throw new BadRequestException('ordernação pode ser asc ou desc');
+    }
+
+    return this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize);
+  }
+
 
 }

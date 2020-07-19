@@ -18,11 +18,16 @@ export class User {
 
   @IsString()
   @prop({ required: true })
-  age: string;
+  birthdate: string;
 
   @IsString()
   @prop({ required: false })
   condition: string;
+
+  @IsString()
+  @prop({ required: false })
+  refprofilepic: string;
+
   //connections
   @IsMongoId()
   @prop({ required: false, ref: 'User', refType: mongoose.Schema.Types.ObjectId })
