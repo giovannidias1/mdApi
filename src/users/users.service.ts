@@ -11,8 +11,8 @@ export class UsersService {
     @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>
   ) { }
 
-
-  async create(createUser: { name: string, email: string, password: string, birthdate: string, condition: string, }): Promise<User> {
+   
+  async create(createUser: User): Promise<User> {
     const createdUser = new this.userModel(createUser);
     return await createdUser.save();
   }
