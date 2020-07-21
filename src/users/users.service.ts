@@ -11,7 +11,7 @@ export class UsersService {
     @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>
   ) { }
 
-   
+
   async create(createUser: User): Promise<User> {
     const createdUser = new this.userModel(createUser);
     return await createdUser.save();
@@ -52,7 +52,14 @@ export class UsersService {
   }
 
   async updateUser(changes: Partial<User>, logedUserData) {
-    const updatedUser = await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, changes, { new: true });
+    
+    let updatedUser;
+    if (changes.password) {
+      updatedUser = await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, changes, { new: true });
+    } else {
+      delete changes['password'];
+      updatedUser = await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, changes, { new: true });
+    }
     const authJwtToken = jwt.sign({ id: updatedUser._id, name: updatedUser.name, email: updatedUser.email, cond: updatedUser.condition }, JWT_SECRET);
     return ({ authJwtToken });
   }
