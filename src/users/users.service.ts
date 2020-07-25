@@ -4,6 +4,7 @@ import { User } from './users.model';
 import { ReturnModelType, mongoose } from '@typegoose/typegoose';
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from 'src/constants';
+import * as fs from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -52,7 +53,7 @@ export class UsersService {
   }
 
   async updateUser(changes: Partial<User>, logedUserData) {
-    
+
     let updatedUser;
     if (changes.password) {
       updatedUser = await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, changes, { new: true });
@@ -91,6 +92,14 @@ export class UsersService {
           seqNo: sortOrder
         }
       });
+  }
+
+  async saveImageProfile(imageBase64){
+    console.log(imageBase64);
+    let base64Image = imageBase64.imageBase64.split(';base64,').pop();
+    const file =  await fs.writeFile('image.jpg', base64Image, { encoding: 'base64' }, function (err) {
+      console.log('File created');
+    });
   }
 
 }

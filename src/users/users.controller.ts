@@ -1,3 +1,4 @@
+import { ImageUpload } from './models/image.model';
 import { Controller, Get, Post, Body, UseGuards, Param, Header, Inject, Request, Req, Put, UseInterceptors, UploadedFile, Res, Query, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.model';
@@ -6,6 +7,7 @@ import { AuthenticationGuard } from '../guards/authentication.guard';
 import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from '../utils/file-uploading.utils';
 import { diskStorage } from 'multer';
+
 
 @Controller('users')
 export class UsersController {
@@ -57,24 +59,9 @@ export class UsersController {
 
   @Post('profilepic')
   @UseGuards(AuthenticationGuard)
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: './files',
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
-  async uploadedFile(@UploadedFile() file,
+  async uploadedFile(@Body() imageBase64: ImageUpload,
     @Req() request: Request) {
-    const logedUserData = request["user"];
-    const response = {
-      originalname: file.originalname,
-      filename: file.filename,
-    };
-    this.usersService.updateRefProfilePic(file.filename, logedUserData);
-    return response;
+      return this.usersService.saveImageProfile(imageBase64)
   }
 
   @Get('profilepic')
