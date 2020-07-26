@@ -1,10 +1,12 @@
-import { Injectable, ExecutionContext, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { User } from './users.model';
 import { ReturnModelType, mongoose } from '@typegoose/typegoose';
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from 'src/constants';
 import * as fs from 'fs';
+import { imageFileFilter } from 'src/utils/file-uploading.utils';
+import { exception } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -94,12 +96,21 @@ export class UsersService {
       });
   }
 
-  async saveImageProfile(imageBase64){
+  async saveImageProfile(imageBase64, logedUserData) {
     console.log(imageBase64);
     let base64Image = imageBase64.imageBase64.split(';base64,').pop();
-    const file =  await fs.writeFile('image.jpg', base64Image, { encoding: 'base64' }, function (err) {
-      console.log('File created');
-    });
+    let type = imageBase64.imageBase64.split('image/').pop().split(';')[0];
+    let newFileName = logedUserData.id + '.' + type;
+    console.log(newFileName);
+    if (imageFileFilter(type)) {
+      const file = await fs.writeFile('./files/' + newFileName, base64Image, { encoding: 'base64' }, function (err) {
+        console.log('File created');
+      });
+      this.updateRefProfilePic(newFileName, logedUserData);
+    }
+    else{
+      throw new BadRequestException("Tipo de arquivo não suportado");
+    }
   }
 
 }

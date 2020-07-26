@@ -4,9 +4,6 @@ import { UsersService } from './users.service';
 import { User } from './users.model';
 import * as bcrypt from 'bcrypt';
 import { AuthenticationGuard } from '../guards/authentication.guard';
-import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
-import { editFileName, imageFileFilter } from '../utils/file-uploading.utils';
-import { diskStorage } from 'multer';
 
 
 @Controller('users')
@@ -61,7 +58,8 @@ export class UsersController {
   @UseGuards(AuthenticationGuard)
   async uploadedFile(@Body() imageBase64: ImageUpload,
     @Req() request: Request) {
-      return this.usersService.saveImageProfile(imageBase64)
+      const logedUserData = request["user"];
+      return this.usersService.saveImageProfile(imageBase64, logedUserData);
   }
 
   @Get('profilepic')
