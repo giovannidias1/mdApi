@@ -8,6 +8,7 @@ export class GetUserMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next: () => void){
         const authJwtToken = req.headers.authorization;
+        console.log('authJwtToken',authJwtToken);
 
         if(!authJwtToken) {
             console.log(authJwtToken);

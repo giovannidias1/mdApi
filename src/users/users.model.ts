@@ -15,10 +15,10 @@ export class User {
   @IsString()
   @prop({ required: true })
   password: string;
-
+b
   @IsString()
   @prop({ required: true })
-  birthdate: string;
+  birthdate: Date;
 
   @IsString()
   @prop({ required: false })
@@ -31,14 +31,14 @@ export class User {
   //connections
   @IsMongoId()
   @prop({ required: false, ref: 'User', refType: mongoose.Schema.Types.ObjectId })
-  follow: Ref<User>[];
+  follow?: Ref<User>[];
 
   @IsMongoId()
   @prop({ required: false, ref: 'User', refType: mongoose.Schema.Types.ObjectId })
-  followedby: Ref<User>[];
+  followedby?: Ref<User>[];
 
   @IsMongoId()
   @prop({ required: false, ref: 'PostM', refType: mongoose.Schema.Types.ObjectId })
-  posts: Ref<PostM>[];
+  posts?: Ref<PostM>[];
 }
 

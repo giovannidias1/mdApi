@@ -1,9 +1,12 @@
-import { Injectable, ExecutionContext, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { User } from './users.model';
 import { ReturnModelType, mongoose } from '@typegoose/typegoose';
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from 'src/constants';
+import * as fs from 'fs';
+import { imageFileFilter } from 'src/utils/file-uploading.utils';
+import { exception } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +15,7 @@ export class UsersService {
   ) { }
 
 
-  async create(createUser: { name: string, email: string, password: string, birthdate: string, condition: string, }): Promise<User> {
+  async create(createUser: User): Promise<User> {
     const createdUser = new this.userModel(createUser);
     return await createdUser.save();
   }
@@ -52,7 +55,14 @@ export class UsersService {
   }
 
   async updateUser(changes: Partial<User>, logedUserData) {
-    const updatedUser = await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, changes, { new: true });
+
+    let updatedUser;
+    if (changes.password) {
+      updatedUser = await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, changes, { new: true });
+    } else {
+      delete changes['password'];
+      updatedUser = await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, changes, { new: true });
+    }
     const authJwtToken = jwt.sign({ id: updatedUser._id, name: updatedUser.name, email: updatedUser.email, cond: updatedUser.condition }, JWT_SECRET);
     return ({ authJwtToken });
   }
@@ -84,6 +94,23 @@ export class UsersService {
           seqNo: sortOrder
         }
       });
+  }
+
+  async saveImageProfile(imageBase64, logedUserData) {
+    console.log(imageBase64);
+    let base64Image = imageBase64.imageBase64.split(';base64,').pop();
+    let type = imageBase64.imageBase64.split('image/').pop().split(';')[0];
+    let newFileName = logedUserData.id + '.' + type;
+    console.log(newFileName);
+    if (imageFileFilter(type)) {
+      const file = await fs.writeFile('./files/' + newFileName, base64Image, { encoding: 'base64' }, function (err) {
+        console.log('File created');
+      });
+      this.updateRefProfilePic(newFileName, logedUserData);
+    }
+    else{
+      throw new BadRequestException("Tipo de arquivo não suportado");
+    }
   }
 
 }
