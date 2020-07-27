@@ -1,3 +1,4 @@
+import { baseUrl } from './../constants';
 import { Injectable, ExecutionContext, UnauthorizedException, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { User } from './users.model';
@@ -67,8 +68,8 @@ export class UsersService {
     return ({ authJwtToken });
   }
 
-  async updateRefProfilePic(profilePic, logedUserData) {
-    await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, { refprofilepic: profilePic });
+  async updateRefProfilePic(url, logedUserData) {
+    await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, { refprofilepic: url });
     return;
   }
 
@@ -97,16 +98,15 @@ export class UsersService {
   }
 
   async saveImageProfile(imageBase64, logedUserData) {
-    console.log(imageBase64);
     let base64Image = imageBase64.imageBase64.split(';base64,').pop();
     let type = imageBase64.imageBase64.split('image/').pop().split(';')[0];
-    let newFileName = logedUserData.id + '.' + type;
-    console.log(newFileName);
+    let newFileName = `${logedUserData.id}.${type}`;
     if (imageFileFilter(type)) {
       const file = await fs.writeFile('./files/' + newFileName, base64Image, { encoding: 'base64' }, function (err) {
         console.log('File created');
       });
-      this.updateRefProfilePic(newFileName, logedUserData);
+      const url  =  `${baseUrl}/users/files/${newFileName}`;
+      this.updateRefProfilePic(url, logedUserData);
     }
     else{
       throw new BadRequestException("Tipo de arquivo não suportado");

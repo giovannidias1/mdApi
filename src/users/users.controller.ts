@@ -87,5 +87,10 @@ export class UsersController {
     return this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize);
   }
 
+  @Get('files/:fileId')
+  async serveAvatar(@Param('fileId') fileId, @Res() res): Promise<any> {
+    res.sendFile(fileId, { root: 'files'});
+  }
+
 
 }
