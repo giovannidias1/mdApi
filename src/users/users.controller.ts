@@ -16,6 +16,13 @@ export class UsersController {
     return await this.usersService.findAll();
   }
 
+
+  @Get('userById')
+  async getUserById(@Param("id") id: string): Promise<User> {
+    console.log('testando o console log aa');
+    return await this.usersService.findOne(id);
+  }
+
   @Post()
   async create(@Body() user: User): Promise<User> {
     var senhatexto = user.password;

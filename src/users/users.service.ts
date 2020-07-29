@@ -105,12 +105,16 @@ export class UsersService {
       const file = await fs.writeFile('./files/' + newFileName, base64Image, { encoding: 'base64' }, function (err) {
         console.log('File created');
       });
-      const url  =  `${baseUrl}/users/files/${newFileName}`;
+      const url = `${baseUrl}/users/files/${newFileName}`;
       this.updateRefProfilePic(url, logedUserData);
     }
-    else{
+    else {
       throw new BadRequestException("Tipo de arquivo não suportado");
     }
+  }
+
+  async findOne(id: string): Promise<User> {
+    return await this.userModel.findOne({ id: id }).exec();
   }
 
 }
