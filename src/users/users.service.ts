@@ -8,6 +8,7 @@ import { JWT_SECRET } from 'src/constants';
 import * as fs from 'fs';
 import { imageFileFilter } from 'src/utils/file-uploading.utils';
 import { exception } from 'console';
+import { userInfo } from 'os';
 
 @Injectable()
 export class UsersService {
@@ -113,8 +114,7 @@ export class UsersService {
     }
   }
 
-  async findOne(id: string): Promise<User> {
-    return await this.userModel.findOne({ id: id }).exec();
-  }
-
+  async findById(id: string) : Promise<User> {
+    return await this.userModel.findById(id, 'id name email birthdate condition refprofilepic').exec();
+}
 }
