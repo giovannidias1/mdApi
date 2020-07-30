@@ -24,7 +24,7 @@ export class AuthController {
                 if(verif == false){
                             reject(new UnauthorizedException());
                         }
-                        const authJwtToken = jwt.sign({id: user._id, name: user.name, email, cond: user.condition, refprofilepic: user.refprofilepic}, JWT_SECRET);
+                        const authJwtToken = jwt.sign({id: user._id, name: user.name, email, condition: user.condition, refprofilepic: user.refprofilepic}, JWT_SECRET);
                         resolve({authJwtToken});
                     }        
                 );    
