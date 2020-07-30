@@ -16,6 +16,13 @@ export class UsersController {
     return await this.usersService.findAll();
   }
 
+
+  @Get('userById/:id')
+  async getUserById(@Param("id") id: string): Promise<User> {
+    console.log('testando o console log aa');
+    return await this.usersService.findById(id);
+  }
+
   @Post()
   async create(@Body() user: User): Promise<User> {
     var senhatexto = user.password;
@@ -85,6 +92,11 @@ export class UsersController {
     }
 
     return this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize);
+  }
+
+  @Get('files/:fileId')
+  async serveAvatar(@Param('fileId') fileId, @Res() res): Promise<any> {
+    res.sendFile(fileId, { root: 'files'});
   }
 
 
