@@ -114,11 +114,8 @@ export class UsersService {
     }
   }
 
-  async findById(id: string): Promise<User> {
-    console.log('aaaaaa', id);
-    let user = await this.userModel.findById(id, 'id name email birthdate condition refprofilepic').lean().exec();
-    user['id'] = user['_id'];
-    delete user['_id'];
-    return user;
+  async findOne(id: string): Promise<User> {
+    return await this.userModel.findOne({ id: id }).exec();
   }
+
 }
