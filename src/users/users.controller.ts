@@ -18,9 +18,9 @@ export class UsersController {
 
 
   @Get('userById')
-  async getUserById(@Param("id") id: string): Promise<User> {
-    console.log('testando o console log aa');
-    return await this.usersService.findOne(id);
+  async getUserById(@Query("id") id: string): Promise<User> {
+    console.log('testando o console log aa', id);
+    return await this.usersService.findById(id);
   }
 
   @Post()
