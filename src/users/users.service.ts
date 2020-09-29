@@ -99,6 +99,7 @@ export class UsersService {
   }
 
   async saveImageProfile(imageBase64, logedUserData) {
+    console.log("testando", imageBase64);
     let base64Image = imageBase64.imageBase64.split(';base64,').pop();
     let type = imageBase64.imageBase64.split('image/').pop().split(';')[0];
     let newFileName = `${logedUserData.id}.${type}`;

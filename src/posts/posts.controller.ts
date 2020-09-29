@@ -7,7 +7,7 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) { }
 
     @Post()
-    async createPost(@Body() post: PostM,
+    async createPost(@Body() post,
     @Req() request: Request): Promise<PostM> {
       const logedUserData = request["user"];
       post.userId = logedUserData.id;
@@ -17,10 +17,5 @@ export class PostsController {
     @Get(":userId")
     async findAllPostsbyId(@Param("userId") userId:string): Promise<PostM[]>{
       return this.postsService.findAllPostsbyId(userId);
-
-     //   if(!posts){
-      //      throw new NotFoundException("could not find course for url " + userId);
-       // }
-        //return posts;
     }
-}
+  }  
