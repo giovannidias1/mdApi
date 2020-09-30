@@ -22,12 +22,6 @@ export class PostsService {
     this.saveImagePost(createPost,  createdPost.id);
     return savedPost;
   }
-  async findAllPostsbyId(userIdparam: string): Promise<PostM[]>{
-    console.log(userIdparam);
-    const x = this.postModel.find({userId: userIdparam});
-    console.log(x);
-    return x;
-  }
 
   async saveImagePost(createdPost, postId) {
     console.log("testando", createdPost);
@@ -49,5 +43,12 @@ export class PostsService {
   async updateRefPostPic(url, idPost) {
     await this.postModel.findOneAndUpdate({ _id: idPost }, { refpostpic: url });
     return;
+  }
+
+  async findAllPostsbyId(userIdparam: string): Promise<PostM[]>{
+    console.log(userIdparam);
+    const x = this.postModel.find({userId: userIdparam});
+    console.log(x);
+    return x;
   }
 }

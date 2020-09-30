@@ -87,7 +87,7 @@ export class UsersService {
     console.log("procurando por  ", searchName, sortOrder, pageNumber, pageSize);
 
     return this.userModel.find({
-      name: { $regex: searchName }
+      name: { $regex: searchName, $options: 'i' }
     }, null,
       {
         skip: pageNumber * pageSize,
