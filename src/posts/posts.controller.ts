@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, NotFoundException, Req, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException, Req, Request, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostM } from './posts.model';
 
@@ -14,8 +14,25 @@ export class PostsController {
       return await this.postsService.createPost(post);
     }
 
-    @Get(":userId")
+    @Get("findallpostsbyid/:userId")
     async findAllPostsbyId(@Param("userId") userId:string): Promise<PostM[]>{
       return this.postsService.findAllPostsbyId(userId);
     }
-  }  
+
+  @Get("feed")
+  loadFeed(
+    @Req() request: Request,
+    @Query("pageNumber") pageNumber = 0,
+    @Query("pageSize") pageSize = 100) {
+    const logedUserData = request["user"];
+    return this.postsService.findPostsFeed(logedUserData, pageNumber, pageSize);
+  }
+
+  @Get("deletepost/:Id")
+  async deletePost(
+  @Request() request: Request,
+  @Param("Id") postId){
+    const logedUserData = request["user"];
+    return this.postsService.deletePostsById(logedUserData, postId);
+  }
+}  

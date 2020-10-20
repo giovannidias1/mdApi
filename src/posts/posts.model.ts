@@ -1,8 +1,12 @@
 import { prop, mongoose } from '@typegoose/typegoose';
-import { IsString, IsNumber, IsMongoId } from 'class-validator';
+import { IsString, IsNumber, IsMongoId, isDate, IsDate } from 'class-validator';
 
 export class PostM {
   
+  @IsDate()
+  @prop({ required: true, default: Date.now() })
+  public createdAt: Date;
+
   @IsString()
   @prop({ required: true })
   title: string;

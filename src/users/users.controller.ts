@@ -77,11 +77,15 @@ export class UsersController {
   }
 
   @Get('searchusers')
-  searchLesson(
+  async searchUsers(
+    @Req() request: Request,
     @Query("searchName") searchName: string,
     @Query("sortOrder") sortOrder = "asc",
     @Query("pageNumber") pageNumber = 0,
     @Query("pageSize") pageSize = 3) {
+
+      const logedUserData = request["user"];
+      const results = [];
 
     if (!searchName) {
       throw new BadRequestException("Defina um nome para ser pesquisado");
@@ -91,7 +95,11 @@ export class UsersController {
       throw new BadRequestException('ordernação pode ser asc ou desc');
     }
 
-    return this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize);
+  /*  await this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize).map((userU) =>{
+      console.log(userU);
+      console.log('a');
+    }); */
+    return await this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize);
   }
 
   @Get('files/:fileId')

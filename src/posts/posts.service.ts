@@ -9,6 +9,7 @@ import { baseUrl } from 'src/constants';
 
 @Injectable()
 export class PostsService {
+
   constructor(
     @InjectModel(PostM) private readonly postModel: ReturnModelType<typeof PostM>,
     @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>
@@ -50,5 +51,35 @@ export class PostsService {
     const x = this.postModel.find({userId: userIdparam});
     console.log(x);
     return x;
+  }
+
+  async findPostsFeed(logedUserData, pageNumber, pageSize){
+    var allIdPosts = []; 
+    var allPosts = [];
+    const completeUserData = await this.userModel.findOne({_id: logedUserData.id });
+    console.log("complete user data: ", completeUserData);
+    await Promise.all(completeUserData.follow.map(async (followedUser)=>{
+      const completeFollowedUser = await this.userModel.findOne({_id: followedUser }).exec();
+      console.log("a", completeFollowedUser.posts);
+      allIdPosts.push(...completeFollowedUser.posts);
+    }))
+    console.log("todos os ids que deveriam aparecer para eduardoradespiel1: ", allIdPosts);
+    await Promise.all(allIdPosts.map(async (postId)=>{
+      console.log("oq está sendo buscado: ", postId)
+      const completePost = await this.postModel.findOne({_id: postId }).exec();
+      if(completePost!=null)
+      allPosts.push(completePost);
+    }))
+    console.log("todos os posts que deveriam aparecer para eduardoradespiel1: ", allPosts)
+    const stopPoint = pageNumber * pageSize
+    return allPosts.slice(stopPoint, stopPoint + pageSize);  
+  }
+
+  async deletePostsById(logedUserData, postId) {
+    const completePost = await this.postModel.findOne({_id: postId }).exec();
+    if(completePost.userId == logedUserData.id){
+      await this.postModel.findOneAndDelete({_id: postId }).exec();
+      //await this.userModel.findOneAndUpdate({_id: followedUser }).exec();
+    }
   }
 }
