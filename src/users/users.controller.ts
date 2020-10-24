@@ -34,6 +34,14 @@ export class UsersController {
     return await this.usersService.create(user);
   }
 
+  @Get('follow/:userId')
+  @UseGuards(AuthenticationGuard)
+  async alreadyFollow(@Req() request: Request,
+  @Param("userId") userId: string) {
+    const logedUserData = request["user"];
+    return await this.usersService.followCheck(logedUserData, userId);
+  }
+
   @Post("follow/:userId")
   @UseGuards(AuthenticationGuard)
   async followSomebody(@Param("userId") userId: string,
@@ -106,6 +114,5 @@ export class UsersController {
   async serveAvatar(@Param('fileId') fileId, @Res() res): Promise<any> {
     res.sendFile(fileId, { root: 'files'});
   }
-
 
 }

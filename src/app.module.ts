@@ -12,7 +12,8 @@ import { MulterModule } from '@nestjs/platform-express';
   imports: [
     TypegooseModule.forRoot('mongodb://localhost:27017/moutaindb', {
       useNewUrlParser: true,
-      useCreateIndex: true
+      useCreateIndex: true,
+      useFindAndModify: false
 
     }),
     UsersModule,

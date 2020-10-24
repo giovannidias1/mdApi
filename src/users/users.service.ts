@@ -26,14 +26,30 @@ export class UsersService {
     return await this.userModel.find().exec();
   }
 
+  async followCheck(logedUserData, userId): Promise<Boolean> {
+    const completeUserData = await this.userModel.findOne({ _id: logedUserData.id });
+    console.log(logedUserData.id, userId );
+    if(completeUserData.follow.indexOf(userId) > -1){
+      return true;
+    }
+    return false;
+  }
+
   async follow(followedId, logedUserData): Promise<Boolean> {
+    if(followedId === logedUserData.id){
+      throw new HttpException("UnfollowedID e LogedUserId iguais", HttpStatus.FORBIDDEN);
+    }
     if (mongoose.Types.ObjectId.isValid(followedId) === false) {
       throw new HttpException("Formato de ID inválido", HttpStatus.FORBIDDEN);
     }
+    
     const x = await this.userModel.findById(followedId);
     console.log("findbyId", x);
     if (x == null) {
       throw new HttpException("Usuário não encontrado", HttpStatus.FORBIDDEN);
+    }
+    if(await this.followCheck(logedUserData, followedId) === true){
+      throw new HttpException("Usuário já está sendo seguido", HttpStatus.FORBIDDEN);
     }
     console.log("id do post: ", followedId, "id do logado: ", logedUserData.id);
     await this.userModel.findOneAndUpdate({ _id: followedId }, { $push: { followedby: logedUserData.id } });
@@ -42,6 +58,9 @@ export class UsersService {
   }
 
   async unfollow(unfollowedId, logedUserData): Promise<Boolean> {
+    if(unfollowedId === logedUserData.id){
+      throw new HttpException("UnfollowedID e LogedUserId iguais", HttpStatus.FORBIDDEN);
+    }
     if (mongoose.Types.ObjectId.isValid(unfollowedId) === false) {
       throw new HttpException("Formato de ID inválido", HttpStatus.FORBIDDEN);
     }
@@ -49,6 +68,9 @@ export class UsersService {
     console.log("findbyId", x);
     if (x == null) {
       throw new HttpException("Usuário não encontrado", HttpStatus.FORBIDDEN);
+    }
+    if(await this.followCheck(logedUserData, unfollowedId) === false){
+      throw new HttpException("Usuário não está sendo seguido", HttpStatus.FORBIDDEN);
     }
     console.log("id do post: ", unfollowedId, "id do logado: ", logedUserData.id);
     await this.userModel.findOneAndUpdate({ _id: unfollowedId }, { $pull: { followedby: logedUserData.id } });
@@ -96,6 +118,7 @@ export class UsersService {
           seqNo: sortOrder
         }
       });
+      //preciso remover o próprio usuário da pesquisa.
   }
 
   async saveImageProfile(imageBase64, logedUserData) {

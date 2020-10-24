@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, NotFoundException, Req, Request, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException, Req, Request, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostM } from './posts.model';
 
@@ -9,6 +9,9 @@ export class PostsController {
     @Post()
     async createPost(@Body() post,
     @Req() request: Request): Promise<PostM> {
+      if(post.likes != null){
+        throw new HttpException("Número de likes não pode ser definido durante a criação", HttpStatus.FORBIDDEN);
+      }
       const logedUserData = request["user"];
       post.userId = logedUserData.id;
       return await this.postsService.createPost(post);

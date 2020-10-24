@@ -15,12 +15,22 @@ export class PostsService {
     @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>
   ) {}
 
+  compare(a,b) {
+    if (a.createdAt < b.createdAt)
+       return -1;
+    if (a.createdAt > b.createdAt)
+      return 1;
+    return 0;
+  }
+
   async createPost(createPost: { title: string, text: string, likes: number, userId: string, imageBase64: string}): Promise<PostM> {
     console.log(createPost.imageBase64);
     const createdPost = new this.postModel(createPost);
     const savedPost = await createdPost.save()  
     await this.userModel.findOneAndUpdate({ _id: createPost.userId }, { $push: { posts: savedPost._id }}, { new: true });
+    if(createPost.imageBase64 != null){
     this.saveImagePost(createPost,  createdPost.id);
+    }
     return savedPost;
   }
 
@@ -72,7 +82,10 @@ export class PostsService {
     }))
     console.log("todos os posts que deveriam aparecer para eduardoradespiel1: ", allPosts)
     const stopPoint = pageNumber * pageSize
-    return allPosts.slice(stopPoint, stopPoint + pageSize);  
+    allPosts.sort(this.compare);
+    console.log("data:", Date.now());
+    return allPosts.slice(stopPoint, stopPoint + pageSize);
+    
   }
 
   async deletePostsById(logedUserData, postId) {

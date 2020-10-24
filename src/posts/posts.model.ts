@@ -4,7 +4,7 @@ import { IsString, IsNumber, IsMongoId, isDate, IsDate } from 'class-validator';
 export class PostM {
   
   @IsDate()
-  @prop({ required: true, default: Date.now() })
+  @prop({ required: true, default: () => Date.now()-10800000 })
   public createdAt: Date;
 
   @IsString()
