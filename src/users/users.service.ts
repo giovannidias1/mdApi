@@ -106,16 +106,17 @@ export class UsersService {
     pageNumber: number,
     pageSize: number) {
 
+    const logedid = 0;
     console.log("procurando por  ", searchName, sortOrder, pageNumber, pageSize);
 
     return this.userModel.find({
-      name: { $regex: searchName, $options: 'i' }
+      name: { $regex: searchName , $options: 'i' }
     }, null,
       {
         skip: pageNumber * pageSize,
         limit: pageSize,
         sort: {
-          seqNo: sortOrder
+        seqNo: sortOrder
         }
       });
       //preciso remover o próprio usuário da pesquisa.

@@ -80,6 +80,10 @@ export class PostsService {
       if(completePost!=null)
       allPosts.push(completePost);
     }))
+    await Promise.all(completeUserData.posts.map(async (selfPostId)=>{
+      const selfPost = await this.postModel.findOne({_id: selfPostId }).exec();
+      allPosts.push(selfPost);
+    }))
     console.log("todos os posts que deveriam aparecer para eduardoradespiel1: ", allPosts)
     const stopPoint = pageNumber * pageSize
     allPosts.sort(this.compare);

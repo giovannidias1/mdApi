@@ -93,7 +93,7 @@ export class UsersController {
     @Query("pageSize") pageSize = 3) {
 
       const logedUserData = request["user"];
-      const results = [];
+      let results = [];
 
     if (!searchName) {
       throw new BadRequestException("Defina um nome para ser pesquisado");
@@ -102,12 +102,15 @@ export class UsersController {
     if (sortOrder != "asc" && sortOrder != 'desc') {
       throw new BadRequestException('ordernação pode ser asc ou desc');
     }
-
-  /*  await this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize).map((userU) =>{
-      console.log(userU);
-      console.log('a');
-    }); */
-    return await this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize);
+    results = await this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize);
+    await results.map((result, key) => {
+    console.log("single result", result, "key: ", key)
+    if(result.id == logedUserData.id){
+      console.log("comparação:", result.id, logedUserData.id, key)
+      results.splice(key, 1)
+    }
+    })
+    return results;
   }
 
   @Get('files/:fileId')
