@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, UnauthorizedException, Req, Request } from '@nestjs/common';
 import { User } from '../users/users.model'; 
 import * as bcrypt from 'bcrypt';
 import { InjectModel } from 'nestjs-typegoose';
@@ -12,7 +12,9 @@ export class AuthController {
 
     @Post()
     async login(@Body("email") email:string,
-          @Body("password") plaintextPassword:string) {
+          @Body("password") plaintextPassword:string,
+          @Req() request: Request) {
+            console.log("requisição", request)
             const user = await this.userModel.findOne({email})
             if(!user){
                 console.log("user doesnt exist on the database", user.email);

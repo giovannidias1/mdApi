@@ -28,6 +28,7 @@ async function bootstrap() {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
+  app.enableCors();
   await app.listen(3000);
 }
 

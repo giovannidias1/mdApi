@@ -140,7 +140,7 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    return await this.userModel.findOne({ id: id }).exec();
+    return await this.userModel.findOne({ _id: id }).exec();
   }
 
 }
