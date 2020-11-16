@@ -4,6 +4,7 @@ import { UsersService } from './users.service';
 import { User } from './users.model';
 import * as bcrypt from 'bcrypt';
 import { AuthenticationGuard } from '../guards/authentication.guard';
+import { get } from 'http';
 
 
 @Controller('users')
@@ -117,4 +118,10 @@ export class UsersController {
     res.sendFile(fileId, { root: 'files'});
   }
 
+  @Get('recomendations')
+  @UseGuards(AuthenticationGuard)
+    async getRecomendations(@Req() request: Request): Promise<User[]>{
+    const logedUserData = request["user"];
+    return this.usersService.recomendation(logedUserData.id, logedUserData.condition)
+      }
 }

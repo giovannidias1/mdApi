@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import { imageFileFilter } from 'src/utils/file-uploading.utils';
 import { exception } from 'console';
 import { userInfo } from 'os';
+import { mapArrayOptions } from '@typegoose/typegoose/lib/internal/utils';
 
 @Injectable()
 export class UsersService {
@@ -141,6 +142,17 @@ export class UsersService {
 
   async findOne(id: string): Promise<User> {
     return await this.userModel.findOne({ _id: id }).exec();
+  }
+
+  async recomendation(id, userCondition): Promise<User[]>{
+    const completeUserData = await this.userModel.findOne({ _id: id });
+    const alreadyFollow = completeUserData.follow
+    let recomendedUsers = await this.userModel.find({condition: { $regex: userCondition , $options: 'i' }}, null);
+    function filterMyselfAndAlreadyFollow(user) {
+      return user.id != id && !alreadyFollow.includes(user.id);
+    }
+    const filteredUsers =  recomendedUsers.filter(filterMyselfAndAlreadyFollow)
+    return filteredUsers.slice(0,3)
   }
 
 }
