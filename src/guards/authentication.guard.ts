@@ -11,11 +11,9 @@ export class AuthenticationGuard implements CanActivate {
         const user = request["user"];
 
         if (!user) {
-            console.log("User not authenticated, denying access...");
             throw new UnauthorizedException();
         }
 
-        console.log("User is authenticated, allowing access");
 
         return true;
     }

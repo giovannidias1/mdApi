@@ -24,7 +24,6 @@ export class PostsService {
   }
 
   async createPost(createPost: { title: string, text: string, likes: number, userId: string, imageBase64: string}): Promise<PostM> {
-    console.log(createPost.imageBase64);
     const createdPost = new this.postModel(createPost);
     const savedPost = await createdPost.save()  
     await this.userModel.findOneAndUpdate({ _id: createPost.userId }, { $push: { posts: savedPost._id }}, { new: true });
@@ -35,13 +34,11 @@ export class PostsService {
   }
 
   async saveImagePost(createdPost, postId) {
-    console.log("testando", createdPost);
     let base64Image = createdPost.imageBase64.split(';base64,').pop();
     let type = createdPost.imageBase64.split('image/').pop().split(';')[0];
     let newFileName = `${postId}.${type}`;
     if (imageFileFilter(type)) {
       const file = await fs.writeFile('./files/' + newFileName, base64Image, { encoding: 'base64' }, function (err) {
-        console.log('File created');
       });
       const url = `${baseUrl}/users/files/${newFileName}`;
       this.updateRefPostPic(url, postId);
@@ -57,9 +54,7 @@ export class PostsService {
   }
 
   async findAllPostsbyId(userIdparam: string): Promise<PostM[]>{
-    console.log(userIdparam);
     const x = this.postModel.find({userId: userIdparam});
-    console.log(x);
     return x;
   }
 
@@ -67,15 +62,11 @@ export class PostsService {
     var allIdPosts = []; 
     var allPosts = [];
     const completeUserData = await this.userModel.findOne({_id: logedUserData.id });
-    console.log("complete user data: ", completeUserData);
     await Promise.all(completeUserData.follow.map(async (followedUser)=>{
       const completeFollowedUser = await this.userModel.findOne({_id: followedUser }).exec();
-      console.log("a", completeFollowedUser.posts);
       allIdPosts.push(...completeFollowedUser.posts);
     }))
-    console.log("todos os ids que deveriam aparecer para eduardoradespiel1: ", allIdPosts);
     await Promise.all(allIdPosts.map(async (postId)=>{
-      console.log("oq está sendo buscado: ", postId)
       const completePost = await this.postModel.findOne({_id: postId }).exec();
       if(completePost!=null)
       allPosts.push(completePost);
@@ -84,10 +75,8 @@ export class PostsService {
       const selfPost = await this.postModel.findOne({_id: selfPostId }).exec();
       allPosts.push(selfPost);
     }))
-    console.log("todos os posts que deveriam aparecer para eduardoradespiel1: ", allPosts)
     const stopPoint = pageNumber * pageSize
     allPosts.sort(this.compare);
-    console.log("data:", Date.now());
     return allPosts.slice(stopPoint, stopPoint + pageSize);
     
   }

@@ -14,14 +14,11 @@ export class AuthController {
     async login(@Body("email") email:string,
           @Body("password") plaintextPassword:string,
           @Req() request: Request) {
-            console.log("requisição", request)
             const user = await this.userModel.findOne({email})
             if(!user){
-                console.log("user doesnt exist on the database", user.email);
                 throw new UnauthorizedException();
             }
             return new Promise((resolve, reject) => {
-                console.log("plain: ", plaintextPassword, "hash: ", user.password);
                 const verif = bcrypt.compareSync(plaintextPassword, user.password);
                 if(verif == false){
                             reject(new UnauthorizedException());

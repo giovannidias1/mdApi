@@ -29,7 +29,6 @@ export class UsersService {
 
   async followCheck(logedUserData, userId): Promise<Boolean> {
     const completeUserData = await this.userModel.findOne({ _id: logedUserData.id });
-    console.log(logedUserData.id, userId );
     if(completeUserData.follow.indexOf(userId) > -1){
       return true;
     }
@@ -45,14 +44,12 @@ export class UsersService {
     }
     
     const x = await this.userModel.findById(followedId);
-    console.log("findbyId", x);
     if (x == null) {
       throw new HttpException("Usuário não encontrado", HttpStatus.FORBIDDEN);
     }
     if(await this.followCheck(logedUserData, followedId) === true){
       throw new HttpException("Usuário já está sendo seguido", HttpStatus.FORBIDDEN);
     }
-    console.log("id do post: ", followedId, "id do logado: ", logedUserData.id);
     await this.userModel.findOneAndUpdate({ _id: followedId }, { $push: { followedby: logedUserData.id } });
     await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, { $push: { follow: followedId } });
     return true;
@@ -66,14 +63,12 @@ export class UsersService {
       throw new HttpException("Formato de ID inválido", HttpStatus.FORBIDDEN);
     }
     const x = await this.userModel.findById(unfollowedId);
-    console.log("findbyId", x);
     if (x == null) {
       throw new HttpException("Usuário não encontrado", HttpStatus.FORBIDDEN);
     }
     if(await this.followCheck(logedUserData, unfollowedId) === false){
       throw new HttpException("Usuário não está sendo seguido", HttpStatus.FORBIDDEN);
     }
-    console.log("id do post: ", unfollowedId, "id do logado: ", logedUserData.id);
     await this.userModel.findOneAndUpdate({ _id: unfollowedId }, { $pull: { followedby: logedUserData.id } });
     await this.userModel.findOneAndUpdate({ _id: logedUserData.id }, { $pull: { follow: unfollowedId } });
     return true;
@@ -108,7 +103,6 @@ export class UsersService {
     pageSize: number) {
 
     const logedid = 0;
-    console.log("procurando por  ", searchName, sortOrder, pageNumber, pageSize);
 
     return this.userModel.find({
       name: { $regex: searchName , $options: 'i' }
@@ -124,13 +118,11 @@ export class UsersService {
   }
 
   async saveImageProfile(imageBase64, logedUserData) {
-    console.log("testando", imageBase64);
     let base64Image = imageBase64.imageBase64.split(';base64,').pop();
     let type = imageBase64.imageBase64.split('image/').pop().split(';')[0];
     let newFileName = `${logedUserData.id}.${type}`;
     if (imageFileFilter(type)) {
       const file = await fs.writeFile('./files/' + newFileName, base64Image, { encoding: 'base64' }, function (err) {
-        console.log('File created');
       });
       const url = `${baseUrl}/users/files/${newFileName}`;
       this.updateRefProfilePic(url, logedUserData);

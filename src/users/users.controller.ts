@@ -13,7 +13,6 @@ export class UsersController {
 
   @Get()
   async getUsers(): Promise<User[] | null> {
-    console.log('testando o console log');
     return await this.usersService.findAll();
   }
 
@@ -29,7 +28,6 @@ export class UsersController {
     user.password = bcrypt.hashSync(user.password, 10);
     var verif = bcrypt.compareSync(senhatexto, user.password);
     if (verif = true) {
-      console.log(senhatexto, "=", user.password);
     }
     return await this.usersService.create(user);
   }
@@ -104,9 +102,7 @@ export class UsersController {
     }
     results = await this.usersService.searchByName(searchName, sortOrder, pageNumber, pageSize);
     await results.map((result, key) => {
-    console.log("single result", result, "key: ", key)
     if(result.id == logedUserData.id){
-      console.log("comparação:", result.id, logedUserData.id, key)
       results.splice(key, 1)
     }
     })

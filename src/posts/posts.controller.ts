@@ -17,7 +17,7 @@ export class PostsController {
       return await this.postsService.createPost(post);
     }
 
-    @Get("findallpostsbyid/:userId")
+    @Get("getallbyid/:userId")
     async findAllPostsbyId(@Param("userId") userId:string): Promise<PostM[]>{
       return this.postsService.findAllPostsbyId(userId);
     }
