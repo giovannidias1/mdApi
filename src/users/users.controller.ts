@@ -83,6 +83,7 @@ export class UsersController {
   }
 
   @Get('searchusers')
+  @UseGuards(AuthenticationGuard)
   async searchUsers(
     @Req() request: Request,
     @Query("searchName") searchName: string,
@@ -110,6 +111,7 @@ export class UsersController {
   }
 
   @Get('files/:fileId')
+  @UseGuards(AuthenticationGuard)
   async serveAvatar(@Param('fileId') fileId, @Res() res): Promise<any> {
     res.sendFile(fileId, { root: 'files'});
   }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { PostM } from './posts.model';
 import { ReturnModelType } from '@typegoose/typegoose';
@@ -6,13 +6,15 @@ import { User } from '../users/users.model';
 import { imageFileFilter } from 'src/utils/file-uploading.utils';
 import * as fs from 'fs';
 import { baseUrl } from 'src/constants';
+import { Comment } from './comments.model';
 
 @Injectable()
 export class PostsService {
 
   constructor(
     @InjectModel(PostM) private readonly postModel: ReturnModelType<typeof PostM>,
-    @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>
+    @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>,
+    @InjectModel(Comment) private readonly commentModel: ReturnModelType<typeof Comment>
   ) {}
 
   compare(a,b) {
@@ -78,14 +80,39 @@ export class PostsService {
     const stopPoint = pageNumber * pageSize
     allPosts.sort(this.compare);
     return allPosts.slice(stopPoint, stopPoint + pageSize);
-    
   }
 
-  async deletePostsById(logedUserData, postId) {
+  async deletePostsById(logedUserData, postId): Promise<boolean> {
     const completePost = await this.postModel.findOne({_id: postId }).exec();
     if(completePost.userId == logedUserData.id){
       await this.postModel.findOneAndDelete({_id: postId }).exec();
-      //await this.userModel.findOneAndUpdate({_id: followedUser }).exec();
+      await this.userModel.findOneAndUpdate({ _id: completePost.userId }, { $pull: { posts: postId } });
+      await this.commentModel.deleteMany({post: postId});
+      return true
     }
+    throw new UnauthorizedException("Só o dono do post pode deletar o post");
+  }
+
+  async createComment(createComment: { text: string, likes: number, userId: string, post: string}): Promise<Comment> {
+    const createdComment = new this.commentModel(createComment);
+    const savedComment = await createdComment.save()  
+    await this.postModel.findOneAndUpdate({ _id: createComment.post }, { $push: { comments: savedComment._id }}, { new: true });
+    return savedComment;
+  }
+
+  async loadComments(postId: string): Promise<Comment[]>{
+    const comments = this.commentModel.find({post: postId}).populate("userId", "name refprofilepic");
+    return comments;
+  }
+
+  async removeComment(commentId, logedUserData): Promise<boolean>{
+    const comment = await this.commentModel.findOne({_id: commentId}).populate("post");
+    console.log(comment.post["userId"], logedUserData.id, comment.userId )
+    if(comment.post["userId"] == logedUserData.id || comment.userId == logedUserData.id ){
+    await this.commentModel.findOneAndDelete({_id: commentId })
+    await this.postModel.findOneAndUpdate({ _id: comment.post }, { $pull: { comments: commentId } });
+    return true;
+    }
+    throw new UnauthorizedException("Somente o dono do comentário ou do post pode apaga-lo")
   }
 }

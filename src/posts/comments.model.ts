@@ -1,10 +1,10 @@
 import { prop, mongoose, Ref } from '@typegoose/typegoose';
 import { IsString, IsNumber, IsMongoId, isDate, IsDate } from 'class-validator';
 import { ApiBody, ApiProperty} from "@nestjs/swagger";
+import { PostM } from './posts.model';
 import { User } from '../users/users.model'
-import { Comment } from './comments.model';
 
-export class PostM {
+export class Comment {
   
   @IsDate()
   @prop({ required: true, default: () => Date.now()-10800000 })
@@ -13,11 +13,6 @@ export class PostM {
 
   @IsString()
   @prop({ required: true })
-  @ApiProperty()
-  title: string;
-
-  @IsString()
-  @prop({ required: false })
   @ApiProperty()
   text: string;
 
@@ -31,14 +26,8 @@ export class PostM {
   @ApiProperty()
   userId:  Ref<User>;
 
-  @IsString()
-  @prop({ required: false })
-  @ApiProperty()
-  refpostpic: string;
-
   @IsMongoId()
-  @prop({ required: false, ref: 'Comments', refType: mongoose.Schema.Types.ObjectId })
+  @prop({ required: false, ref: 'PostM', refType: mongoose.Schema.Types.ObjectId })
   @ApiProperty()
-  comments: Ref<Comment>[];
-
+  post: Ref<PostM>;
 }
