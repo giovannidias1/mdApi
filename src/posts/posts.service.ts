@@ -55,6 +55,10 @@ export class PostsService {
     return;
   }
 
+  async findPost(postId){
+    return await this.postModel.findOne({_id: postId})
+  }
+
   async findAllPostsbyId(userIdparam: string): Promise<PostM[]>{
     const x = this.postModel.find({userId: userIdparam});
     return x;

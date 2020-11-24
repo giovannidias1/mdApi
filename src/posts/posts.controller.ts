@@ -20,6 +20,12 @@ export class PostsController {
       return await this.postsService.createPost(post);
     }
 
+    @Get("/:postId")
+    @UseGuards(AuthenticationGuard)
+    async findOnePost(@Param("postId") postId:string): Promise<PostM>{
+      return this.postsService.findPost(postId);
+    }
+
     @Get("getallbyid/:userId")
     @UseGuards(AuthenticationGuard)
     async findAllPostsbyId(@Param("userId") userId:string): Promise<PostM[]>{
