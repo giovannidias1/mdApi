@@ -20,7 +20,7 @@ export class PostsController {
       return await this.postsService.createPost(post);
     }
 
-    @Get("/:postId")
+    @Get("getone/:postId")
     @UseGuards(AuthenticationGuard)
     async findOnePost(@Param("postId") postId:string): Promise<PostM>{
       return this.postsService.findPost(postId);
@@ -32,7 +32,7 @@ export class PostsController {
       return this.postsService.findAllPostsbyId(userId);
     }
 
-  @Get("feed")
+  @Get("/feed")
   @UseGuards(AuthenticationGuard)
   loadFeed(
     @Req() request: Request,
