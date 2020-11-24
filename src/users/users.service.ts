@@ -37,7 +37,7 @@ export class UsersService {
 
   async follow(followedId, logedUserData): Promise<Boolean> {
     if(followedId === logedUserData.id){
-      throw new HttpException("UnfollowedID e LogedUserId iguais", HttpStatus.FORBIDDEN);
+      throw new HttpException("followedID e LogedUserId iguais", HttpStatus.FORBIDDEN);
     }
     if (mongoose.Types.ObjectId.isValid(followedId) === false) {
       throw new HttpException("Formato de ID inválido", HttpStatus.FORBIDDEN);
@@ -97,24 +97,33 @@ export class UsersService {
     return user.refprofilepic;
   }
 
-  searchByName(searchName: string,
+ async searchByName(
+    logedUserData,
+    searchName: string,
     sortOrder: string,
     pageNumber: number,
-    pageSize: number) {
-
-    const logedid = 0;
-
-    return this.userModel.find({
+    pageSize: number,) {
+    const completeUserData = await this.userModel.findOne({_id: logedUserData.id})
+    console.log(completeUserData.name);
+    let results: any = await this.userModel.find({
       name: { $regex: searchName , $options: 'i' }
     }, null,
       {
         skip: pageNumber * pageSize,
-        limit: pageSize,
+        limit: pageSize*1+1,
         sort: {
         seqNo: sortOrder
         }
-      });
-      //preciso remover o próprio usuário da pesquisa.
+      }).lean();
+      results.map((result, i)=>{
+        if(completeUserData.follow.includes(result._id)){
+        results[i].alreadyFollow = true
+        }
+      })
+      function mySelf(individual){
+        return individual._id != completeUserData.id
+      }
+      return results.filter(mySelf);
   }
 
   async saveImageProfile(imageBase64, logedUserData) {
