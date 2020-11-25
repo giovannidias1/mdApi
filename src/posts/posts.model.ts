@@ -9,7 +9,7 @@ export class PostM {
   @ApiProperty()
   @IsDate()
   @prop({ required: true, default: () => Date.now()-10800000 })
-  @ApiProperty()
+  @ApiProperty({required: false})
   public createdAt: Date;
 
   @IsString()
@@ -29,17 +29,17 @@ export class PostM {
 
   @IsMongoId()
   @prop({ required: true, ref: 'User', refType: mongoose.Schema.Types.ObjectId })
-  @ApiProperty()
+  @ApiProperty({required: false})
   userId:  Ref<User>;
 
   @IsString()
   @prop({ required: false })
-  @ApiProperty()
+  @ApiProperty({required: false})
   refpostpic: string;
 
   @IsMongoId()
   @prop({ required: false, ref: 'Comments', refType: mongoose.Schema.Types.ObjectId })
-  @ApiProperty()
+  @ApiProperty({required: false})
   comments: Ref<Comment>[];
 
 }

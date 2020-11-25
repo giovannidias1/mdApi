@@ -8,7 +8,7 @@ export class Like {
   
   @IsDate()
   @prop({ required: true, default: () => Date.now()-10800000 })
-  @ApiProperty()
+  @ApiProperty({required: false})
   public createdAt: Date;
 
   @IsMongoId()

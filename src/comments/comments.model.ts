@@ -8,7 +8,7 @@ export class Comment {
   
   @IsDate()
   @prop({ required: true, default: () => Date.now()-10800000 })
-  @ApiProperty()
+  @ApiProperty({required: false})
   public createdAt: Date;
 
   @IsString()
@@ -18,16 +18,16 @@ export class Comment {
 
   @IsNumber()
   @prop({ required: false })
-  @ApiProperty()
+  @ApiProperty({required: false})
   likes: number;
 
   @IsMongoId()
   @prop({ required: true, ref: 'User', refType: mongoose.Schema.Types.ObjectId })
-  @ApiProperty()
+  @ApiProperty({required: false})
   userId:  Ref<User>;
 
   @IsMongoId()
   @prop({ required: false, ref: 'PostM', refType: mongoose.Schema.Types.ObjectId })
-  @ApiProperty()
+  @ApiProperty({required: false})
   post: Ref<PostM>;
 }

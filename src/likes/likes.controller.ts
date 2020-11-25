@@ -13,8 +13,9 @@ export class LikesController {
   @Post("/:postId")
   @ApiOperation({ summary: 'Envia Like ou deslike dependendo se o usuário já deu like ou não no post' })
   @UseGuards(AuthenticationGuard)
-  async createComment(@Param("postId") postId: string,
-  @Req() request: Request) {
+  async createComment(@Param("postId") postId: Like,
+  @Req() request: Request,
+  @Body() ignoreBody: Like) {
     const logedUserData = request["user"]
     return this.likesService.sendLike(postId, logedUserData)
   }

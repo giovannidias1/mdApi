@@ -13,7 +13,7 @@ export class CommentsService {
     @InjectModel(Comment) private readonly commentModel: ReturnModelType<typeof Comment>
   ) {}
 
-  async createComment(createComment: { text: string, likes: number, userId: string, post: string}): Promise<Comment> {
+  async createComment(createComment): Promise<Comment> {
     const createdComment = new this.commentModel(createComment);
     const savedComment = await createdComment.save()  
     await this.postModel.findOneAndUpdate({ _id: createComment.post }, { $push: { comments: savedComment._id }}, { new: true });

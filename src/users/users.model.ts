@@ -32,23 +32,23 @@ b
 
   @IsString()
   @prop({ required: false })
-  @ApiProperty()
+  @ApiProperty({required: false})
   refprofilepic: string;
 
   //connections
   @IsMongoId()
   @prop({ required: false, ref: 'User', refType: mongoose.Schema.Types.ObjectId })
-  @ApiProperty()
+  @ApiProperty({required: false})
   follow?: Ref<User>[];
 
   @IsMongoId()
   @prop({ required: false, ref: 'User', refType: mongoose.Schema.Types.ObjectId })
-  @ApiProperty()
+  @ApiProperty({required: false})
   followedby?: Ref<User>[];
 
   @IsMongoId()
   @prop({ required: false, ref: 'PostM', refType: mongoose.Schema.Types.ObjectId })
-  @ApiProperty()
+  @ApiProperty({required: false})
   posts?: Ref<PostM>[];
 }
 

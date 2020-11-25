@@ -27,7 +27,7 @@ export class PostsService {
     return 0;
   }
 
-  async createPost(createPost: { title: string, text: string, likes: number, userId: string, imageBase64: string}): Promise<PostM> {
+  async createPost(createPost): Promise<PostM> {
     const createdPost = new this.postModel(createPost);
     const savedPost = await createdPost.save()  
     await this.userModel.findOneAndUpdate({ _id: createPost.userId }, { $push: { posts: savedPost._id }}, { new: true });

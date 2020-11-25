@@ -13,7 +13,7 @@ export class PostsController {
     @Post()
     @UseGuards(AuthenticationGuard)
     @ApiOperation({ summary: 'Dados devem ser enviados assim como no schema no body da requisição, exceto pelos campos createdAt e Likes' })
-    async createPost(@Body() post,
+    async createPost(@Body() post: PostM,
     @Req() request: Request): Promise<PostM> {
       if(post.likes != null){
         throw new HttpException("Número de likes não pode ser definido durante a criação", HttpStatus.FORBIDDEN);

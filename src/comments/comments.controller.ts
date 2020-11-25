@@ -13,7 +13,7 @@ export class CommentsController {
   @Post()
   @UseGuards(AuthenticationGuard)
   @ApiOperation({ summary: 'Dados devem ser enviados assim como no schema, exceto pelos campos createdAt e Likes' })
-  async createComment(@Body() comment,
+  async createComment(@Body() comment: Comment,
   @Req() request: Request): Promise<Comment> {
     if(comment.likes != null){
       throw new HttpException("Número de likes não pode ser definido durante a criação", HttpStatus.FORBIDDEN);
