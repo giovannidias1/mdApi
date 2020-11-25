@@ -1,7 +1,7 @@
 import { prop, mongoose, Ref } from '@typegoose/typegoose';
 import { IsString, IsNumber, IsMongoId, isDate, IsDate } from 'class-validator';
 import { ApiBody, ApiProperty} from "@nestjs/swagger";
-import { PostM } from './posts.model';
+import { PostM } from '../posts/posts.model';
 import { User } from '../users/users.model'
 
 export class Comment {

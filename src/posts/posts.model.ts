@@ -1,11 +1,12 @@
 import { prop, mongoose, Ref } from '@typegoose/typegoose';
 import { IsString, IsNumber, IsMongoId, isDate, IsDate } from 'class-validator';
-import { ApiBody, ApiProperty} from "@nestjs/swagger";
+import { ApiProperty} from "@nestjs/swagger";
 import { User } from '../users/users.model'
-import { Comment } from './comments.model';
+import { Comment } from '../comments/comments.model';
 
 export class PostM {
   
+  @ApiProperty()
   @IsDate()
   @prop({ required: true, default: () => Date.now()-10800000 })
   @ApiProperty()

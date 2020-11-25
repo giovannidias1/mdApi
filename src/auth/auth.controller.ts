@@ -5,12 +5,15 @@ import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from 'src/constants';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('login')
 @Controller('login')
 export class AuthController {
     constructor(@InjectModel(User) private readonly userModel: ReturnModelType<typeof User>) {}
 
     @Post()
+    @ApiOperation({ summary: 'Email e password enviados no body podendo retornar Token confirmando autenticação ou Unauthorized Exception' })
     async login(@Body("email") email:string,
           @Body("password") plaintextPassword:string,
           @Req() request: Request) {

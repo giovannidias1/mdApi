@@ -13,8 +13,8 @@ async function bootstrap() {
 
 
   const options = new DocumentBuilder()
-    .setTitle('Documentação API')
-    .setDescription('')
+    .setTitle('Documentação API Hearth Beat Social Network')
+    .setDescription('A documentação apresenta uma breve descrição de cada Endpoint, seus parametros e informações necessárias e quais são os dados retornados.')
     .setVersion('1.0')
     .addTag('')
     .build();
