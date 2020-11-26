@@ -33,8 +33,10 @@ export class PostsController {
     @Get("getallbyid/:userId")
     @ApiOperation({ summary: 'Retorna todos os posts de um usuário em específico informado via parametro' })
     @UseGuards(AuthenticationGuard)
-    async findAllPostsbyId(@Param("userId") userId:string): Promise<PostM[]>{
-      return this.postsService.findAllPostsbyId(userId);
+    async findAllPostsbyId(@Param("userId") userId:string,
+    @Request() request: Request): Promise<PostM[]>{
+      const logedUserData = request["user"];
+      return this.postsService.findAllPostsbyId(userId, logedUserData);
     }
 
   @Get("/feed")

@@ -31,7 +31,7 @@ b
   condition: string;
 
   @IsString()
-  @prop({ required: false })
+  @prop({ required: false, default: "http://localhost:3000/api/users/files/defaultpic.png" })
   @ApiProperty({required: false})
   refprofilepic: string;
 

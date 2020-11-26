@@ -61,28 +61,49 @@ export class PostsService {
     return await this.postModel.findOne({_id: postId})
   }
 
-  async findAllPostsbyId(userIdparam: string): Promise<PostM[]>{
-    const x = this.postModel.find({userId: userIdparam});
-    return x;
+  async findAllPostsbyId(userIdparam: string, logedUserData): Promise<PostM[]>{
+    var allPosts = []
+    allPosts = await this.postModel.find({userId: userIdparam}).lean().exec();
+    var i
+    for(i=0;i < allPosts.length;i++){
+      console.log(i)
+      if(await this.likeModel.find( { $and: [ {userId: logedUserData.id }, { post: allPosts[i]._id }]}).countDocuments() > 0){
+        allPosts[i].liked = true
+      }
+      if(await this.likeModel.find( { $and: [ {userId: logedUserData.id }, { post: allPosts[i]._id }]}).countDocuments() == 0){
+        allPosts[i].liked = false
+      }
+    }
+    return allPosts;
   }
 
   async findPostsFeed(logedUserData, pageNumber, pageSize){
-    var allIdPosts = []; 
+    var allIdPosts = [];
     var allPosts = [];
     const completeUserData = await this.userModel.findOne({_id: logedUserData.id });
+    console.log(completeUserData.name);
     await Promise.all(completeUserData.follow.map(async (followedUser)=>{
       const completeFollowedUser = await this.userModel.findOne({_id: followedUser }).exec();
       allIdPosts.push(...completeFollowedUser.posts);
     }))
     await Promise.all(allIdPosts.map(async (postId)=>{
-      const completePost = await this.postModel.findOne({_id: postId }).exec();
+      const completePost = await this.postModel.findOne({_id: postId }).lean().exec();
       if(completePost!=null)
       allPosts.push(completePost);
     }))
     await Promise.all(completeUserData.posts.map(async (selfPostId)=>{
-      const selfPost = await this.postModel.findOne({_id: selfPostId }).exec();
+      const selfPost = await this.postModel.findOne({_id: selfPostId }).lean().exec();
       allPosts.push(selfPost);
     }))
+    var i
+    for(i=0;i < allPosts.length;i++){
+      if(await this.likeModel.find( { $and: [ {userId: completeUserData.id }, { post: allPosts[i]._id }]}).countDocuments() > 0){
+        allPosts[i].liked = true
+      }
+      if(await this.likeModel.find( { $and: [ {userId: completeUserData.id }, { post: allPosts[i]._id }]}).countDocuments() == 0){
+        allPosts[i].liked = false
+      }
+    }
     const stopPoint = pageNumber * pageSize
     allPosts.sort(this.compare);
     return allPosts.slice(stopPoint, stopPoint + pageSize);
