@@ -20,9 +20,9 @@ export class PostsService {
   ) {}
 
   compare(a,b) {
-    if (a.createdAt < b.createdAt)
-       return -1;
     if (a.createdAt > b.createdAt)
+       return -1;
+    if (a.createdAt < b.createdAt)
       return 1;
     return 0;
   }
@@ -31,7 +31,7 @@ export class PostsService {
     const createdPost = new this.postModel(createPost);
     const savedPost = await createdPost.save()  
     await this.userModel.findOneAndUpdate({ _id: createPost.userId }, { $push: { posts: savedPost._id }}, { new: true });
-    if(createPost.imageBase64 != null){
+    if(createPost.imageBase64){
     this.saveImagePost(createPost,  createdPost.id);
     }
     return savedPost;

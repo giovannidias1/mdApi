@@ -35,6 +35,11 @@ b
   @ApiProperty({required: false})
   refprofilepic: string;
 
+  @IsMongoId()
+  @prop({ required: false, default: false })
+  @ApiProperty({required: false})
+  admin: boolean;
+
   //connections
   @IsMongoId()
   @prop({ required: false, ref: 'User', refType: mongoose.Schema.Types.ObjectId })

@@ -113,7 +113,6 @@ export class UsersController {
   }
 
   @Get('files/:fileId')
-  @UseGuards(AuthenticationGuard)
   @ApiOperation({ summary: 'Retorna a imagem conforme o id informado via parametro' })
   async serveAvatar(@Param('fileId') fileId: string, @Res() res): Promise<any> {
     res.sendFile(fileId, { root: 'files'});

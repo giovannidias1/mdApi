@@ -9,6 +9,7 @@ import { GetUserMiddleware } from './middleware/get-user.middleware';
 import { MulterModule } from '@nestjs/platform-express';
 import { CommentsModule } from './comments/comments.module';
 import { LikesModule } from './likes/likes.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { LikesModule } from './likes/likes.module';
     PostsModule,
     CommentsModule,
     LikesModule,
+    AdminModule,
   ],
   controllers: [
     AppController
@@ -37,7 +39,7 @@ export class AppModule implements NestModule {
 
     consumer
       .apply(GetUserMiddleware)
-      .forRoutes("login", "posts", "users", "comments", "likes");
+      .forRoutes("login", "posts", "users", "comments", "likes", "admin");
 
   }
 }
