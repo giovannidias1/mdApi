@@ -29,7 +29,7 @@
     "bcrypt": "^5.0.0",
     "class-validator": "^0.14.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.18",
+    "mongoose": "^5.13.20",
     "nestjs-typegoose": "^7.1.26",
     "password-hash-and-salt": "^0.1.4",
     "reflect-metadata": "^0.1.13",
